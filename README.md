@@ -16,6 +16,10 @@ Nusantara Food API for listing various food in Indonesia
 | `/foods/:id` | `DELETE` | Delete one food by id | ✅          |
 | `/foods/:id` | `PUT`    | Update one food by id | ✅          |
 
+## ERD
+
+![ERD](./assets/erd.svg)
+
 ## Getting Started
 
 To install dependencies:
