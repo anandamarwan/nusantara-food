@@ -7,14 +7,14 @@ Nusantara Food API for listing various food in Indonesia
 - Production: https://nusantara-food.anandamarwan.com
 - Local: http://localhost:3000
 
-| Endpoint     | HTTP     | Description           |
-| ------------ | -------- | --------------------- |
-| `/foods`     | `GET`    | Get all foods         |
-| `/foods/:id` | `GET`    | Get one food by id    |
-| `/foods`     | `POST`   | Add new food          |
-| `/foods`     | `DELETE` | Delete all foods      |
-| `/foods/:id` | `DELETE` | Delete one food by id |
-| `/foods/:id` | `PUT`    | Update one food by id |
+| Endpoint     | HTTP     | Description           | Implemented |
+| ------------ | -------- | --------------------- | ----------- |
+| `/foods`     | `GET`    | Get all foods         | ✅          |
+| `/foods/:id` | `GET`    | Get one food by id    | ✅          |
+| `/foods`     | `POST`   | Add new food          |             |
+| `/foods`     | `DELETE` | Delete all foods      | ✅          |
+| `/foods/:id` | `DELETE` | Delete one food by id | ✅          |
+| `/foods/:id` | `PUT`    | Update one food by id |             |
 
 ## Getting Started
 
