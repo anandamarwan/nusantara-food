@@ -14,12 +14,12 @@ datasource db {
 }
 
 model Food {
-  id Int @id @default(autoincrement())
+  id String @id @default(cuid())
 
   name         String   @db.VarChar(255)
   category     String   @db.VarChar(255)
   regional     String?  @db.VarChar(255)
-  ingredients  String?  @db.VarChar(255)
+  ingredients  String[]
   cookingTime  String?  @db.VarChar(255)
   calories     Int?
   description  String?  @db.VarChar(255)
