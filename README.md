@@ -2,6 +2,26 @@
 
 Nusantara Food API for listing various food in Indonesia
 
+## Workflow
+
+1. Choose and setup runtime and framework. Try to create simple backend REST API with just a variable, without database.
+   - Runtime: Bun / Node.js
+   - Framework: Hono / Express
+2. Choose and setup database
+   - Database: PostgreSQL / MySQL
+   - ORM: Prisma / Drizzle
+3. Setup and run database, for local and production
+   - Docker & Docker Compose
+   - Database on any server: VPS / Google Cloud / Amazon Web Services
+   - Database as a Service (DBaaS): Neon / Supabase / Tembo
+   - Database client: shell/terminal / TablePlus / DataGrip
+4. Connect database to ORM
+5. Write database schema
+6. Create database migration or apply migration
+7. Create API endpoints and use ORM functions in the application
+8. Deploy to Platform as a Service (PaaS): Render / Railway / Heroku
+9. Connect deployment to domain
+
 ## REST API Specification
 
 - Production: <https://nusantara-food.anandamarwan.com>
