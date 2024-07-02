@@ -12,3 +12,15 @@ datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
+
+model Food {
+  id           Int      @id @default(autoincrement())
+  name         String   @db.VarChar(255)
+  category     String   @db.VarChar(255)
+  regional     String?  @db.VarChar(255)
+  ingredients  String?  @db.VarChar(255)
+  cookingTime  String?  @db.VarChar(255)
+  calories     Int?
+  description  String?  @db.VarChar(255)
+  isVegetarian Boolean? @default(false)
+}
