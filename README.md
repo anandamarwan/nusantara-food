@@ -4,8 +4,8 @@ Nusantara Food API for listing various food in Indonesia
 
 ## REST API Specification
 
-- Production: https://nusantara-food.anandamarwan.com
-- Local: http://localhost:3000
+- Production: <https://nusantara-food.anandamarwan.com>
+- Local: <http://localhost:3000>
 
 | Endpoint     | HTTP     | Description           | Implemented |
 | ------------ | -------- | --------------------- | ----------- |
@@ -28,10 +28,16 @@ To install dependencies:
 bun install
 ```
 
+```sh
+docker compose up
+# or
+docker compose up -d
+```
+
 To run:
 
 ```sh
 bun run dev
 ```
 
-open http://localhost:3000
+Open <http://localhost:3000>
