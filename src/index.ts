@@ -1,6 +1,6 @@
 import { Hono } from "hono";
 
-// import { dataFoods } from "./data/food";
+import { dataFoods } from "./data/food";
 import { prisma } from "./libs/prisma";
 
 const app = new Hono();
@@ -21,25 +21,29 @@ app.get("/foods", async (c) => {
   });
 });
 
-// app.get("/foods/:id", (c) => {
-//   const id = Number(c.req.param("id"));
+app.get("/foods/:id", async (c) => {
+  const id = c.req.param("id");
 
-//   if (!id) {
-//     return c.json({
-//       massage: "There is no food Id",
-//     });
-//   }
+  const food = await prisma.food.findUnique({
+    where: { id },
+  });
+  if (!food) {
+    c.status(404);
+    return c.json({ message: "Food not found", id });
+  }
 
-//   const food = foods.find((food) => food.id == id);
+  return c.json({ food });
+});
 
-//   if (!food) {
-//     return c.json({
-//       massage: "There is no Food",
-//     });
-//   }
+app.post("/foods/seed", async (c) => {
+  for (const dataFood of dataFoods) {
+    await prisma.food.create({
+      data: dataFood,
+    });
+  }
 
-//   return c.json(food);
-// });
+  return c.json({ message: "Data foods have been seeded" });
+});
 
 // app.delete("/foods", (c) => {
 //   foods = [];
