@@ -8,7 +8,9 @@ CREATE TABLE "Food" (
     "cookingTime" VARCHAR(255),
     "calories" INTEGER,
     "description" VARCHAR(255),
-    "isVegetarian" BOOLEAN NOT NULL DEFAULT false,
+    "isVegetarian" BOOLEAN DEFAULT false,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
     CONSTRAINT "Food_pkey" PRIMARY KEY ("id")
 );

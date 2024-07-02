@@ -14,7 +14,8 @@ datasource db {
 }
 
 model Food {
-  id           Int      @id @default(autoincrement())
+  id Int @id @default(autoincrement())
+
   name         String   @db.VarChar(255)
   category     String   @db.VarChar(255)
   regional     String?  @db.VarChar(255)
@@ -23,4 +24,7 @@ model Food {
   calories     Int?
   description  String?  @db.VarChar(255)
   isVegetarian Boolean? @default(false)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now()) @updatedAt
 }
