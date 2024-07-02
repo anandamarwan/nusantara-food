@@ -1,7 +1,7 @@
 import { Hono } from "hono";
-import { type Food, dataFoods } from "./data/food";
 
-let foods = dataFoods;
+// import { dataFoods } from "./data/food";
+import { prisma } from "./libs/prisma";
 
 const app = new Hono();
 
@@ -12,123 +12,122 @@ app.get("/", (c) => {
   });
 });
 
-app.get("/foods", (c) => {
-  if (foods.length <= 0) {
-    return c.json({
-      message: "There is no Foods data",
-    });
-  }
-
-  return c.json({ foods });
-});
-
-app.get("/foods/:id", (c) => {
-  const id = Number(c.req.param("id"));
-
-  if (!id) {
-    return c.json({
-      massage: "There is no food Id",
-    });
-  }
-
-  const food = foods.find((food) => food.id == id);
-
-  if (!food) {
-    return c.json({
-      massage: "There is no Food",
-    });
-  }
-
-  return c.json(food);
-});
-
-app.delete("/foods", (c) => {
-  foods = [];
+app.get("/foods", async (c) => {
+  const foods = await prisma.food.findMany();
 
   return c.json({
-    message: "All foods data have been deleted",
+    message: "Get all foods",
+    foods,
   });
 });
 
-app.delete("/foods/:id", (c) => {
-  const id = Number(c.req.param("id"));
+// app.get("/foods/:id", (c) => {
+//   const id = Number(c.req.param("id"));
 
-  if (!id) {
-    return c.json({
-      massage: "There is no food Id",
-    });
-  }
+//   if (!id) {
+//     return c.json({
+//       massage: "There is no food Id",
+//     });
+//   }
 
-  const food = foods.find((food) => food.id == id);
+//   const food = foods.find((food) => food.id == id);
 
-  if (!food) {
-    return c.json({
-      massage: "There is no food to be deleted",
-    });
-  }
+//   if (!food) {
+//     return c.json({
+//       massage: "There is no Food",
+//     });
+//   }
 
-  foods = foods.filter((food) => food.id != id);
+//   return c.json(food);
+// });
 
-  return c.json({
-    message: `Food with Id ${id} has been deleted`,
+// app.delete("/foods", (c) => {
+//   foods = [];
 
-    deletedFood: food,
-  });
-});
+//   return c.json({
+//     message: "All foods data have been deleted",
+//   });
+// });
 
-app.post("/foods", async (c) => {
-  const body = await c.req.json();
+// app.delete("/foods/:id", (c) => {
+//   const id = Number(c.req.param("id"));
 
-  const newFood: Food = {
-    id: foods[foods.length - 1].id + 1,
-    name: body.name,
-    category: body.category,
-  };
+//   if (!id) {
+//     return c.json({
+//       massage: "There is no food Id",
+//     });
+//   }
 
-  const updatedFoods = [...foods, newFood];
+//   const food = foods.find((food) => food.id == id);
 
-  foods = updatedFoods;
+//   if (!food) {
+//     return c.json({
+//       massage: "There is no food to be deleted",
+//     });
+//   }
 
-  return c.json(newFood);
-});
+//   foods = foods.filter((food) => food.id != id);
 
-app.put("/foods/:id", async (c) => {
-  const id = Number(c.req.param("id"));
+//   return c.json({
+//     message: `Food with Id ${id} has been deleted`,
 
-  if (!id) {
-    return c.json({
-      massage: "There is no food Id",
-    });
-  }
+//     deletedFood: food,
+//   });
+// });
 
-  const food = foods.find((food) => food.id == id);
+// app.post("/foods", async (c) => {
+//   const body = await c.req.json();
 
-  if (!food) {
-    return c.json({
-      massage: "There is no Food",
-    });
-  }
+//   const newFood: DataFood = {
+//     id: foods[foods.length - 1].id + 1,
+//     name: body.name,
+//     category: body.category,
+//   };
 
-  const body = await c.req.json();
+//   const updatedFoods = [...foods, newFood];
 
-  const newFood: Food = {
-    id: food.id,
-    name: body.name,
-    category: body.category,
-  };
+//   foods = updatedFoods;
 
-  const updatedFoods = foods.map((food) => {
-    if (food.id == id) {
-      return newFood;
-    } else {
-      return food;
-    }
-  });
+//   return c.json(newFood);
+// });
 
-  foods = updatedFoods;
+// app.put("/foods/:id", async (c) => {
+//   const id = Number(c.req.param("id"));
 
-  return c.json(food);
-});
+//   if (!id) {
+//     return c.json({
+//       massage: "There is no food Id",
+//     });
+//   }
+
+//   const food = foods.find((food) => food.id == id);
+
+//   if (!food) {
+//     return c.json({
+//       massage: "There is no Food",
+//     });
+//   }
+
+//   const body = await c.req.json();
+
+//   const newFood: DataFood = {
+//     id: food.id,
+//     name: body.name,
+//     category: body.category,
+//   };
+
+//   const updatedFoods = foods.map((food) => {
+//     if (food.id == id) {
+//       return newFood;
+//     } else {
+//       return food;
+//     }
+//   });
+
+//   foods = updatedFoods;
+
+//   return c.json(food);
+// });
 
 console.log("👋 Nusantara Food API is running");
 
