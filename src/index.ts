@@ -1,10 +1,8 @@
 import { Hono } from "hono";
 import { zValidator } from "@hono/zod-validator";
-
+import { z } from "zod";
 import { dataFoods } from "./data/food";
 import { prisma } from "./libs/prisma";
-
-import { z } from "zod";
 
 const app = new Hono();
 
@@ -30,6 +28,7 @@ app.get("/foods/:id", async (c) => {
   const food = await prisma.food.findUnique({
     where: { id },
   });
+
   if (!food) {
     c.status(404);
     return c.json({ message: "Food not found", id });
@@ -38,37 +37,40 @@ app.get("/foods/:id", async (c) => {
   return c.json({ food });
 });
 
-app.post(
-  "/foods",
-  zValidator(
-    "json",
-    z.object({
-      name: z.string(),
-      category: z.string(),
-      regional: z.string(),
-    })
-  ),
-  async (c) => {
-    const body = c.req.valid("json");
+const foodSchema = z.object({
+  name: z.string(),
+  category: z.string(),
+  regional: z.string(),
+  cookingTime: z.string(),
+  calories: z.number(),
+  description: z.string(),
+  isVegetarian: z.boolean(),
+});
 
-    try {
-      const newFood = await prisma.food.create({
-        data: {
-          name: body.name,
-          category: body.category,
-          regional: body.regional,
-        },
-      });
-      return c.json(newFood);
-    } catch (error) {
-      c.status(400);
-      return c.json({
-        message: "Cannot create food",
-        error,
-      });
-    }
+app.post("/foods", zValidator("json", foodSchema), async (c) => {
+  const body = c.req.valid("json");
+
+  try {
+    const newFood = await prisma.food.create({
+      data: {
+        name: body.name,
+        category: body.category,
+        regional: body.regional,
+        cookingTime: body.cookingTime,
+        calories: body.calories,
+        description: body.description,
+        isVegetarian: body.isVegetarian,
+      },
+    });
+    return c.json(newFood);
+  } catch (error) {
+    c.status(400);
+    return c.json({
+      message: "Cannot create food",
+      error,
+    });
   }
-);
+});
 
 app.post("/foods/seed", async (c) => {
   for (const dataFood of dataFoods) {
@@ -93,14 +95,22 @@ app.delete("/foods/:id", async (c) => {
 
   if (!id) return c.json({ message: "There is no food ID" });
 
-  const deletedFood = await prisma.food.delete({
-    where: { id },
-  });
+  try {
+    const deletedFood = await prisma.food.delete({
+      where: { id },
+    });
 
-  return c.json({
-    message: `food with ID ${id} has been deleted`,
-    deletedFood,
-  });
+    return c.json({
+      message: `Food with ID ${id} has been deleted`,
+      deletedFood,
+    });
+  } catch (error) {
+    c.status(400);
+    return c.json({
+      message: "Cannot delete food",
+      error,
+    });
+  }
 });
 
 app.put("/foods/:id", async (c) => {
@@ -108,17 +118,39 @@ app.put("/foods/:id", async (c) => {
 
   if (!id) return c.json({ message: "There is no food Id" });
 
-  const body = await c.req.json();
-  const newFood = await prisma.food.update({
-    where: { id },
-    data: {
-      name: body.name ? String(body.name) : undefined,
-      category: body.category ? String(body.category) : undefined,
-      regional: body.regional ? String(body.regional) : undefined,
-    },
-  });
+  let body;
+  try {
+    body = await c.req.json();
+  } catch (error) {
+    c.status(400);
+    return c.json({ message: "Failed to parse JSON" });
+  }
 
-  return c.json(newFood);
+  try {
+    const updatedFood = await prisma.food.update({
+      where: { id },
+      data: {
+        name: body.name ? String(body.name) : undefined,
+        category: body.category ? String(body.category) : undefined,
+        regional: body.regional ? String(body.regional) : undefined,
+        cookingTime: body.cookingTime ? String(body.cookingTime) : undefined,
+        calories: body.calories ? Number(body.calories) : undefined,
+        description: body.description ? String(body.description) : undefined,
+        isVegetarian:
+          typeof body.isVegetarian === "boolean"
+            ? body.isVegetarian
+            : undefined,
+      },
+    });
+
+    return c.json(updatedFood);
+  } catch (error) {
+    c.status(400);
+    return c.json({
+      message: "Cannot update food",
+      error,
+    });
+  }
 });
 
 console.log("👋 Nusantara Food API is running");
