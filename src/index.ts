@@ -1,7 +1,10 @@
 import { Hono } from "hono";
+import { zValidator } from "@hono/zod-validator";
 
 import { dataFoods } from "./data/food";
 import { prisma } from "./libs/prisma";
+
+import { z } from "zod";
 
 const app = new Hono();
 
@@ -35,6 +38,38 @@ app.get("/foods/:id", async (c) => {
   return c.json({ food });
 });
 
+app.post(
+  "/foods",
+  zValidator(
+    "json",
+    z.object({
+      name: z.string(),
+      category: z.string(),
+      regional: z.string(),
+    })
+  ),
+  async (c) => {
+    const body = c.req.valid("json");
+
+    try {
+      const newFood = await prisma.food.create({
+        data: {
+          name: body.name,
+          category: body.category,
+          regional: body.regional,
+        },
+      });
+      return c.json(newFood);
+    } catch (error) {
+      c.status(400);
+      return c.json({
+        message: "Cannot create food",
+        error,
+      });
+    }
+  }
+);
+
 app.post("/foods/seed", async (c) => {
   for (const dataFood of dataFoods) {
     await prisma.food.create({
@@ -45,93 +80,51 @@ app.post("/foods/seed", async (c) => {
   return c.json({ message: "Data foods have been seeded" });
 });
 
-// app.delete("/foods", (c) => {
-//   foods = [];
+app.delete("/foods", async (c) => {
+  await prisma.food.deleteMany();
 
-//   return c.json({
-//     message: "All foods data have been deleted",
-//   });
-// });
+  return c.json({
+    message: "All foods data have been deleted",
+  });
+});
 
-// app.delete("/foods/:id", (c) => {
-//   const id = Number(c.req.param("id"));
+app.delete("/foods/:id", async (c) => {
+  const id = Number(c.req.param("id"));
 
-//   if (!id) {
-//     return c.json({
-//       massage: "There is no food Id",
-//     });
-//   }
+  if (!id) return c.json({ message: "There is no food ID" });
 
-//   const food = foods.find((food) => food.id == id);
+  const deletedFood = await prisma.food.delete({
+    where: { id: String(id) },
+  });
 
-//   if (!food) {
-//     return c.json({
-//       massage: "There is no food to be deleted",
-//     });
-//   }
+  return c.json({
+    message: `food with ID ${id} has been deleted`,
+    deletedFood,
+  });
+});
 
-//   foods = foods.filter((food) => food.id != id);
+app.put("/foods/:id", async (c) => {
+  const id = Number(c.req.param("id"));
 
-//   return c.json({
-//     message: `Food with Id ${id} has been deleted`,
+  if (!id) {
+    return c.json({
+      message: "There is no food Id",
+    });
+  }
 
-//     deletedFood: food,
-//   });
-// });
+  const body = await c.req.json();
 
-// app.post("/foods", async (c) => {
-//   const body = await c.req.json();
+  const updatedFood = await prisma.food.update({
+    where: { id: String(id) },
+    data: {
+      name: body.name ? String(body.name) : undefined,
+      category: body.category ? String(body.category) : undefined,
+      regional: body.regional ? String(body.regional) : undefined,
+    },
+  });
 
-//   const newFood: DataFood = {
-//     id: foods[foods.length - 1].id + 1,
-//     name: body.name,
-//     category: body.category,
-//   };
-
-//   const updatedFoods = [...foods, newFood];
-
-//   foods = updatedFoods;
-
-//   return c.json(newFood);
-// });
-
-// app.put("/foods/:id", async (c) => {
-//   const id = Number(c.req.param("id"));
-
-//   if (!id) {
-//     return c.json({
-//       massage: "There is no food Id",
-//     });
-//   }
-
-//   const food = foods.find((food) => food.id == id);
-
-//   if (!food) {
-//     return c.json({
-//       massage: "There is no Food",
-//     });
-//   }
-
-//   const body = await c.req.json();
-
-//   const newFood: DataFood = {
-//     id: food.id,
-//     name: body.name,
-//     category: body.category,
-//   };
-
-//   const updatedFoods = foods.map((food) => {
-//     if (food.id == id) {
-//       return newFood;
-//     } else {
-//       return food;
-//     }
-//   });
-
-//   foods = updatedFoods;
-
-//   return c.json(food);
-// });
+  return c.json(updatedFood);
+});
 
 console.log("👋 Nusantara Food API is running");
 
