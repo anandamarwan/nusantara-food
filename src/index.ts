@@ -77,7 +77,7 @@ app.post("/foods/seed", async (c) => {
     });
   }
 
-  return c.json({ message: "Data foods have been seeded" });
+  return c.json({ message: "Many foods data has been seeded" });
 });
 
 app.delete("/foods", async (c) => {
@@ -89,12 +89,12 @@ app.delete("/foods", async (c) => {
 });
 
 app.delete("/foods/:id", async (c) => {
-  const id = Number(c.req.param("id"));
+  const id = c.req.param("id");
 
   if (!id) return c.json({ message: "There is no food ID" });
 
   const deletedFood = await prisma.food.delete({
-    where: { id: String(id) },
+    where: { id },
   });
 
   return c.json({
@@ -104,18 +104,13 @@ app.delete("/foods/:id", async (c) => {
 });
 
 app.put("/foods/:id", async (c) => {
-  const id = Number(c.req.param("id"));
+  const id = c.req.param("id");
 
-  if (!id) {
-    return c.json({
-      message: "There is no food Id",
-    });
-  }
+  if (!id) return c.json({ message: "There is no food Id" });
 
   const body = await c.req.json();
-
-  const updatedFood = await prisma.food.update({
-    where: { id: String(id) },
+  const newFood = await prisma.food.update({
+    where: { id },
     data: {
       name: body.name ? String(body.name) : undefined,
       category: body.category ? String(body.category) : undefined,
@@ -123,7 +118,7 @@ app.put("/foods/:id", async (c) => {
     },
   });
 
-  return c.json(updatedFood);
+  return c.json(newFood);
 });
 
 console.log("👋 Nusantara Food API is running");
