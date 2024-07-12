@@ -48,6 +48,12 @@ To install dependencies:
 bun install
 ```
 
+Generate Prisma Client:
+
+```sh
+bun prisma generate
+```
+
 ```sh
 docker compose up
 # or
