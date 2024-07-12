@@ -1,8 +1,8 @@
 import { Hono } from "hono";
+import { zValidator } from "@hono/zod-validator";
 
 import { prisma } from "../libs/prisma";
-import { zValidator } from "@hono/zod-validator";
-import { foodSchema } from "./schema";
+import { foodCreateSchema } from "./schema";
 import { dataFoods } from "../data/food";
 
 const app = new Hono();
@@ -31,7 +31,7 @@ app.get("/:id", async (c) => {
   return c.json({ food });
 });
 
-app.post("/", zValidator("json", foodSchema), async (c) => {
+app.post("/", zValidator("json", foodCreateSchema), async (c) => {
   const body = c.req.valid("json");
 
   try {

@@ -1,11 +1,11 @@
 import { z } from "zod";
 
-export const foodSchema = z.object({
-  name: z.string(),
+export const foodCreateSchema = z.object({
+  name: z.string().min(5).max(100),
   category: z.string(),
-  regional: z.string(),
-  cookingTime: z.string(),
-  calories: z.number(),
-  description: z.string(),
-  isVegetarian: z.boolean(),
+  regional: z.string().optional(),
+  cookingTime: z.string().optional(),
+  calories: z.number().optional(),
+  description: z.string().optional(),
+  isVegetarian: z.boolean().optional(),
 });
